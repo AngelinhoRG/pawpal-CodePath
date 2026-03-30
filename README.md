@@ -1,5 +1,21 @@
 # PawPal+ (Module 2 Project)
 
+## 📸 Demo
+
+**Owner setup and pet management**
+
+<a href='/Pawpal-Codepath/Screenshot 2026-03-29 at 11.42.23 PM.png' target='_blank'><img src='/Pawpal-Codepath/Screenshot 2026-03-29 at 11.42.23 PM.png' title='PawPal App' width='' alt='PawPal App' class='center-block' /></a>
+
+**Adding a pet with species, birthday, and weight**
+
+<a href='/Pawpal-Codepath/Screenshot 2026-03-29 at 11.43.43 PM.png' target='_blank'><img src='/Pawpal-Codepath/Screenshot 2026-03-29 at 11.43.43 PM.png' title='PawPal App' width='' alt='PawPal App' class='center-block' /></a>
+
+**Scheduling tasks with duration and priority**
+
+<a href='/Pawpal-Codepath/Screenshot 2026-03-29 at 11.44.46 PM.png' target='_blank'><img src='/Pawpal-Codepath/Screenshot 2026-03-29 at 11.44.46 PM.png' title='PawPal App' width='' alt='PawPal App' class='center-block' /></a>
+
+---
+
 You are building **PawPal+**, a Streamlit app that helps a pet owner plan care tasks for their pet.
 
 ## Scenario
@@ -21,6 +37,19 @@ Your final app should:
 - Generate a daily schedule/plan based on constraints and priorities
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
+
+## Features
+
+- **Pet profiles** — Store each pet's name, type, birthday, and weight. Age is calculated automatically from the birthday so it never goes stale.
+- **Task management** — Add, edit, and remove care tasks (walks, feeding, meds, grooming, etc.) with a name, duration, priority, and optional recurrence frequency.
+- **Completion tracking** — Mark tasks complete with a timestamp. Each task carries an `is_complete` flag for the current cycle alongside a `last_performed` history.
+- **Overdue detection** — Tasks with a set frequency automatically flag themselves as overdue when the interval since `last_performed` is exceeded.
+- **Recurring tasks** — Tasks with a frequency auto-schedule their next occurrence the moment they are completed, with no manual input required.
+- **Conflict warnings** — The scheduler scans all scheduled task pairs and reports any whose time slots overlap, so clashes are visible before they become a problem.
+- **Sort by time** — The daily plan is always displayed in chronological order regardless of the order tasks were added.
+- **Priority sorting** — Tasks can be sorted high → medium → low so the most important care items surface first.
+- **Filter by pet or status** — Narrow the schedule by pet name, completion status, or both to quickly see what still needs to be done.
+- **Availability-aware scheduling** — The owner inputs which time slots are free on a given day; the scheduler only assigns tasks to slots that are long enough to fit them.
 
 ## Smarter Scheduling
 
