@@ -25,23 +25,26 @@ class Task:
     pet: Optional[Pet] = None           # back-reference to owning pet
 
     def mark_complete(self) -> None:
+        """Mark this task as completed."""
         self.is_complete = True
 
     def edit_task(self, field: str, value) -> None:
+        """Update a task field by name."""
         setattr(self, field, value)
 
     def remove_task(self) -> None:
-        # uses self.pet back-reference to remove itself from the pet's task list
+        """Remove this task from its associated pet's task list."""
         if self.pet is not None:
             self.pet.remove_task(self)
 
     def get_time_since_last_performed(self) -> Optional[timedelta]:
+        """Return elapsed time since the task was last performed, or None if never."""
         if self.last_performed is None:
             return None
         return datetime.now() - self.last_performed
 
     def is_overdue(self) -> bool:
-        # requires self.frequency to be set to determine overdue status
+        """Return True if the task is past its scheduled frequency."""
         if self.frequency is None or self.last_performed is None:
             return False
         return datetime.now() - self.last_performed > self.frequency
@@ -60,6 +63,7 @@ class Pet:
         return len(self.tasks)
 
     def calculate_age(self) -> int:
+        """Return the pet's age in whole years."""
         today = date.today()
         age = today.year - self.birthday.year
         if (today.month, today.day) < (self.birthday.month, self.birthday.day):
@@ -67,21 +71,27 @@ class Pet:
         return age
 
     def update_weight(self, new_weight: float) -> None:
+        """Update the pet's recorded weight."""
         self.weight = new_weight
 
     def add_task(self, task: Task) -> None:
+        """Append a task to this pet's task list."""
         self.tasks.append(task)
 
     def remove_task(self, task: Task) -> None:
+        """Remove a task from this pet's task list."""
         self.tasks.remove(task)
 
     def list_tasks(self) -> list[Task]:
+        """Return a copy of this pet's task list."""
         return list(self.tasks)
 
     def get_incomplete_tasks(self) -> list[Task]:
+        """Return all tasks that have not been marked complete."""
         return [t for t in self.tasks if not t.is_complete]
 
     def get_overdue_tasks(self) -> list[Task]:
+        """Return all tasks whose frequency interval has been exceeded."""
         return [t for t in self.tasks if t.is_overdue()]
 
 
@@ -96,16 +106,19 @@ class Owner:
         return len(self.pets)
 
     def add_pet(self, pet: Pet) -> None:
+        """Add a pet to this owner's pet list."""
         self.pets.append(pet)
 
     def change_email(self, new_email: str) -> None:
+        """Update the owner's email address."""
         self.email = new_email
 
     def change_name(self, new_name: str) -> None:
+        """Update the owner's display name."""
         self.name = new_name
 
     def get_all_tasks(self) -> list[Task]:
-        # aggregates tasks across all pets in self.pets
+        """Return a flat list of every task across all of this owner's pets."""
         return [task for pet in self.pets for task in pet.tasks]
 
 
@@ -116,33 +129,39 @@ class Scheduler:
         self.availability: dict[date, list[TimeSlot]] = {}
 
     def add_task(self, task: Task, slot: TimeSlot) -> None:
-        # validate: slot.duration >= timedelta(minutes=task.duration) before scheduling
+        """Schedule a task into a time slot if the slot is long enough."""
         if slot.duration >= timedelta(minutes=task.duration):
             self.schedule[slot] = task
 
     def remove_task(self, task: Task) -> None:
+        """Remove a task and its time slot from the schedule."""
         slot = next((s for s, t in self.schedule.items() if t is task), None)
         if slot is not None:
             del self.schedule[slot]
 
     def edit_task_time_slot(self, task: Task, new_slot: TimeSlot) -> None:
+        """Reschedule a task to a new time slot."""
         self.remove_task(task)
         self.add_task(task, new_slot)
 
     def set_availability(self, day: date, slots: list[TimeSlot]) -> None:
+        """Record the available time slots for a given day."""
         self.availability[day] = slots
 
     def get_schedule_for_day(self, day: date) -> dict[TimeSlot, Task]:
+        """Return all scheduled tasks occurring on a specific date."""
         return {slot: task for slot, task in self.schedule.items() if slot.start.date() == day}
 
     def get_unscheduled_tasks(self) -> list[Task]:
-        # returns tasks on owner's pets that have not been placed in any slot
+        """Return tasks belonging to the owner's pets that have no scheduled slot."""
         scheduled = set(self.schedule.values())
         return [task for pet in self.owner.pets for task in pet.tasks if task not in scheduled]
 
     def get_tasks_by_priority(self, priority: str) -> list[Task]:
+        """Return all scheduled tasks matching the given priority level."""
         return [task for task in self.schedule.values() if task.priority == priority]
 
     def sort_tasks_by_priority(self) -> list[Task]:
+        """Return all scheduled tasks sorted high → medium → low priority."""
         order = {"high": 0, "medium": 1, "low": 2}
         return sorted(self.schedule.values(), key=lambda t: order.get(t.priority, 99))
