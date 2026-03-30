@@ -25,8 +25,21 @@ class Task:
     pet: Optional[Pet] = None           # back-reference to owning pet
 
     def mark_complete(self) -> None:
-        """Mark this task as completed."""
+        """Mark this task as completed and record the time it was performed."""
         self.is_complete = True
+        self.last_performed = datetime.now()
+
+    def next_occurrence(self) -> Optional[Task]:
+        """Return a new Task instance for the next recurrence, or None if not recurring."""
+        if self.frequency is None:
+            return None
+        return Task(
+            name=self.name,
+            duration=self.duration,
+            priority=self.priority,
+            frequency=self.frequency,
+            pet=self.pet,
+        )
 
     def edit_task(self, field: str, value) -> None:
         """Update a task field by name."""
@@ -165,3 +178,40 @@ class Scheduler:
         """Return all scheduled tasks sorted high → medium → low priority."""
         order = {"high": 0, "medium": 1, "low": 2}
         return sorted(self.schedule.values(), key=lambda t: order.get(t.priority, 99))
+
+    def sort_by_time(self) -> list[tuple[TimeSlot, Task]]:
+        """Return all scheduled (slot, task) pairs sorted by start time."""
+        return sorted(self.schedule.items(), key=lambda item: item[0].start)
+
+    def complete_task(self, task: Task) -> Optional[Task]:
+        """Mark a task complete and, if recurring, schedule the next occurrence.
+
+        Returns the new Task if one was created, otherwise None.
+        """
+        task.mark_complete()
+        next_task = task.next_occurrence()
+        if next_task is None:
+            return None
+        next_start = task.last_performed + task.frequency
+        next_slot = TimeSlot(
+            start=next_start,
+            end=next_start + timedelta(minutes=next_task.duration),
+        )
+        self.add_task(next_task, next_slot)
+        if next_task.pet is not None:
+            next_task.pet.add_task(next_task)
+        return next_task
+
+    def filter_tasks(
+        self,
+        *,
+        pet_name: Optional[str] = None,
+        is_complete: Optional[bool] = None,
+    ) -> list[Task]:
+        """Return scheduled tasks filtered by pet name and/or completion status."""
+        tasks = list(self.schedule.values())
+        if pet_name is not None:
+            tasks = [t for t in tasks if t.pet is not None and t.pet.name == pet_name]
+        if is_complete is not None:
+            tasks = [t for t in tasks if t.is_complete == is_complete]
+        return tasks
