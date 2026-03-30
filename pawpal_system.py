@@ -1,20 +1,27 @@
+from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from typing import Optional
 
 
-@dataclass
+@dataclass(frozen=True)
 class TimeSlot:
     start: datetime
     end: datetime
+
+    @property
+    def duration(self) -> timedelta:
+        return self.end - self.start
 
 
 @dataclass
 class Task:
     name: str
-    duration: int           # minutes
+    duration: int                       # minutes
     priority: str
+    frequency: Optional[timedelta] = None
     last_performed: Optional[datetime] = None
+    pet: Optional[Pet] = None           # back-reference to owning pet
 
     def mark_complete(self) -> None:
         pass
@@ -23,12 +30,14 @@ class Task:
         pass
 
     def remove_task(self) -> None:
+        # uses self.pet back-reference to remove itself from the pet's task list
         pass
 
     def get_time_since_last_performed(self) -> Optional[timedelta]:
         pass
 
     def is_overdue(self) -> bool:
+        # requires self.frequency to be set to determine overdue status
         pass
 
 
@@ -81,11 +90,13 @@ class Owner:
 
 
 class Scheduler:
-    def __init__(self):
+    def __init__(self, owner: Owner):
+        self.owner = owner
         self.schedule: dict[TimeSlot, Task] = {}
-        self.availability: dict[str, list[TimeSlot]] = {}
+        self.availability: dict[date, list[TimeSlot]] = {}
 
     def add_task(self, task: Task, slot: TimeSlot) -> None:
+        # validate: slot.duration >= timedelta(minutes=task.duration) before scheduling
         pass
 
     def remove_task(self, task: Task) -> None:
@@ -94,8 +105,8 @@ class Scheduler:
     def edit_task_time_slot(self, task: Task, new_slot: TimeSlot) -> None:
         pass
 
-    def set_availability(self, day: str, slots: list[TimeSlot]) -> None:
+    def set_availability(self, day: date, slots: list[TimeSlot]) -> None:
         pass
 
-    def get_schedule_for_day(self, day: str) -> dict[TimeSlot, Task]:
+    def get_schedule_for_day(self, day: date) -> dict[TimeSlot, Task]:
         pass

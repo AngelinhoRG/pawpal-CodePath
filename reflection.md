@@ -8,12 +8,19 @@
 **a. Initial design**
 
 - Briefly describe your initial UML design.
+    - The Owner can own many pets, but a pet can only belong to 1 owner
+    - The Pet can have many tasks, but a task can be assigned to one pet
+    - The Task is scheduled by the scheduler. A scheduler can schedule many tasks, but a task can be assigned to one schedule
 - What classes did you include, and what responsibilities did you assign to each?
+    - Owner owns a pet and sets the pets attributes. Pet adds and removes tasks and is responsible for calculating the pets age based on the pets birthday. Task class is responsible for editing the tasks contents. It is also responsible for keeping track of which tasks have been completed. The scheduler class is responsible for scheduling tasks throughout the days they are needed.
 
 **b. Design changes**
 
 - Did your design change during implementation?
+    - Yes
 - If yes, describe at least one change and why you made it.
+    - is_overdue() has no frequency/interval to compare against
+    is_overdue() can't determine if a task is overdue without knowing how often it should recur (e.g. daily, weekly). Task has no frequency or interval attribute, so this method can never be meaningfully implemented as-is.
 
 ---
 
