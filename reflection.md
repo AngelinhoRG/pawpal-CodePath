@@ -34,7 +34,9 @@
 **b. Tradeoffs**
 
 - Describe one tradeoff your scheduler makes.
+    - The new detect_conflicts() uses O(n²) pair comparisons instead of a faster sort-then-sweep approach.
 - Why is that tradeoff reasonable for this scenario?
+    - A pet owner will never have enough daily tasks for the performance difference to matter. Clarity wins over premature optimization at this scale.
 
 ---
 

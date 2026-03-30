@@ -1,6 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
+from itertools import combinations
 from typing import Optional
 
 
@@ -11,6 +12,7 @@ class TimeSlot:
 
     @property
     def duration(self) -> timedelta:
+        """Return the length of this time slot as a timedelta."""
         return self.end - self.start
 
 
@@ -73,6 +75,7 @@ class Pet:
 
     @property
     def num_tasks(self) -> int:
+        """Return the total number of tasks assigned to this pet."""
         return len(self.tasks)
 
     def calculate_age(self) -> int:
@@ -116,6 +119,7 @@ class Owner:
 
     @property
     def num_pets(self) -> int:
+        """Return the number of pets owned by this owner."""
         return len(self.pets)
 
     def add_pet(self, pet: Pet) -> None:
@@ -189,15 +193,11 @@ class Scheduler:
         Two slots conflict when one starts before the other ends:
             a.start < b.end  AND  a.end > b.start
         """
-        pairs = list(self.schedule.items())
-        conflicts = []
-        for i in range(len(pairs)):
-            slot_a, task_a = pairs[i]
-            for j in range(i + 1, len(pairs)):
-                slot_b, task_b = pairs[j]
-                if slot_a.start < slot_b.end and slot_a.end > slot_b.start:
-                    conflicts.append((task_a, task_b))
-        return conflicts
+        return [
+            (task_a, task_b)
+            for (slot_a, task_a), (slot_b, task_b) in combinations(self.schedule.items(), 2)
+            if slot_a.start < slot_b.end and slot_a.end > slot_b.start
+        ]
 
     def complete_task(self, task: Task) -> Optional[Task]:
         """Mark a task complete and, if recurring, schedule the next occurrence.
