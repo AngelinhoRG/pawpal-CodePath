@@ -21,6 +21,7 @@ class Task:
     priority: str
     frequency: Optional[timedelta] = None
     last_performed: Optional[datetime] = None
+    is_complete: bool = False
     pet: Optional[Pet] = None           # back-reference to owning pet
 
     def mark_complete(self) -> None:
@@ -68,6 +69,12 @@ class Pet:
     def list_tasks(self) -> list[Task]:
         pass
 
+    def get_incomplete_tasks(self) -> list[Task]:
+        pass
+
+    def get_overdue_tasks(self) -> list[Task]:
+        pass
+
 
 class Owner:
     def __init__(self, name: str, email: str):
@@ -86,6 +93,10 @@ class Owner:
         pass
 
     def change_name(self, new_name: str) -> None:
+        pass
+
+    def get_all_tasks(self) -> list[Task]:
+        # aggregates tasks across all pets in self.pets
         pass
 
 
@@ -109,4 +120,14 @@ class Scheduler:
         pass
 
     def get_schedule_for_day(self, day: date) -> dict[TimeSlot, Task]:
+        pass
+
+    def get_unscheduled_tasks(self) -> list[Task]:
+        # returns tasks on owner's pets that have not been placed in any slot
+        pass
+
+    def get_tasks_by_priority(self, priority: str) -> list[Task]:
+        pass
+
+    def sort_tasks_by_priority(self) -> list[Task]:
         pass
