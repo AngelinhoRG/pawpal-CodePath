@@ -183,6 +183,22 @@ class Scheduler:
         """Return all scheduled (slot, task) pairs sorted by start time."""
         return sorted(self.schedule.items(), key=lambda item: item[0].start)
 
+    def detect_conflicts(self) -> list[tuple[Task, Task]]:
+        """Return pairs of tasks whose time slots overlap.
+
+        Two slots conflict when one starts before the other ends:
+            a.start < b.end  AND  a.end > b.start
+        """
+        pairs = list(self.schedule.items())
+        conflicts = []
+        for i in range(len(pairs)):
+            slot_a, task_a = pairs[i]
+            for j in range(i + 1, len(pairs)):
+                slot_b, task_b = pairs[j]
+                if slot_a.start < slot_b.end and slot_a.end > slot_b.start:
+                    conflicts.append((task_a, task_b))
+        return conflicts
+
     def complete_task(self, task: Task) -> Optional[Task]:
         """Mark a task complete and, if recurring, schedule the next occurrence.
 

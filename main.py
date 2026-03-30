@@ -28,9 +28,14 @@ def make_slot(hour: int, minute: int, duration_minutes: int) -> TimeSlot:
     return TimeSlot(start=start, end=start + timedelta(minutes=duration_minutes))
 
 scheduler.schedule[make_slot(11, 0, 20)] = grooming       # added first
-scheduler.schedule[make_slot(9,  0, 60)] = vet_checkup    # added second
-scheduler.schedule[make_slot(8,  0, 10)] = feeding         # added third
+scheduler.schedule[make_slot(9,  0, 60)] = vet_checkup    # added second — overlaps grooming (9:00–10:00 vs 9:30 start below)
+scheduler.schedule[make_slot(8,  0, 10)] = feeding        # added third
 scheduler.schedule[make_slot(7,  0, 30)] = morning_walk   # added last
+
+# Intentional conflict: bath starts at exactly 9:00, same as vet_checkup
+bath = Task(name="Bath", duration=20, priority="medium", pet=dog)
+dog.tasks.append(bath)
+scheduler.schedule[make_slot(9, 0, 20)] = bath
 
 # Complete recurring tasks — should auto-schedule next occurrences
 print("=== Completing Recurring Tasks ===\n")
@@ -70,3 +75,14 @@ for task in scheduler.filter_tasks(pet_name="Star"):
 print(f"\n=== Filter: Incomplete Tasks for Rob ===\n")
 for task in scheduler.filter_tasks(pet_name="Rob", is_complete=False):
     print(f"  {task.name:<20} {task.duration} min  {task.priority}")
+
+# --- Print: Conflict Detection ---
+print(f"\n=== Conflict Detection ===\n")
+conflicts = scheduler.detect_conflicts()
+if conflicts:
+    for task_a, task_b in conflicts:
+        pet_a = task_a.pet.name if task_a.pet else "N/A"
+        pet_b = task_b.pet.name if task_b.pet else "N/A"
+        print(f"  WARNING: '{task_a.name}' ({pet_a}) and '{task_b.name}' ({pet_b}) overlap — please reschedule one.")
+else:
+    print("  No conflicts detected. Schedule looks good!")
