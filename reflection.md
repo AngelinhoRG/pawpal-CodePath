@@ -45,12 +45,16 @@
 **a. How you used AI**
 
 - How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
+    - Designing the app through a UML diagram, implementing logic using the UML diagram, debugging, writing tests, UI, and refactoring.
 - What kinds of prompts or questions were most helpful?
+    - Questions where you get an explanation back.
 
 **b. Judgment and verification**
 
 - Describe one moment where you did not accept an AI suggestion as-is.
+    - N/A
 - How did you evaluate or verify what the AI suggested?
+    - N/A
 
 ---
 
@@ -59,12 +63,16 @@
 **a. What you tested**
 
 - What behaviors did you test?
+    - Testing of the conflict detector and the sorting of tasks.
 - Why were these tests important?
+    - It is important that the user recieves accurate information.
 
 **b. Confidence**
 
 - How confident are you that your scheduler works correctly?
+    - Very confident. 8/10
 - What edge cases would you test next if you had more time?
+    - Pets with the same names. 
 
 ---
 
@@ -73,11 +81,14 @@
 **a. What went well**
 
 - What part of this project are you most satisfied with?
+    - Understanding how to get the best out of the AI responses.
 
 **b. What you would improve**
 
 - If you had another iteration, what would you improve or redesign?
+    - I would improve the UI to make it to where once you create a profile, it takes you to another screen rather than unlocking more things below in the same screen.
 
 **c. Key takeaway**
 
 - What is one important thing you learned about designing systems or working with AI on this project?
+    - System design is a lot more complex than I though, as shown by my UML diagrams before and after I was done. The UML diagram was way more complicated after all the AI suggestions.
