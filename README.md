@@ -31,6 +31,32 @@ PawPal+ includes four algorithms that make the scheduler more intelligent:
 - **Recurring tasks** — Tasks with a `frequency` (e.g. `timedelta(days=1)` for daily, `timedelta(weeks=1)` for weekly) auto-schedule their next occurrence when completed via `Scheduler.complete_task()`. The next slot is calculated as `last_performed + frequency`.
 - **Conflict detection** — `Scheduler.detect_conflicts()` scans all scheduled task pairs and returns any whose time slots overlap. It prints a warning rather than crashing, so the owner can reschedule without losing any data.
 
+## Testing PawPal+
+
+### Run the tests
+
+```bash
+python -m pytest tests/test_pawpal.py -v
+```
+
+### What the tests cover
+
+| Test | What it verifies |
+|---|---|
+| `test_mark_complete_changes_status` | `mark_complete()` flips `is_complete` from `False` to `True` |
+| `test_add_task_increases_pet_task_count` | `add_task()` correctly grows a pet's task list |
+| `test_sort_by_time_returns_chronological_order` | `sort_by_time()` returns tasks ordered by earliest start time, regardless of insertion order |
+| `test_complete_daily_task_schedules_next_day` | Completing a recurring task auto-schedules the next occurrence exactly `frequency` time later |
+| `test_detect_conflicts_flags_overlapping_tasks` | `detect_conflicts()` identifies two tasks sharing the same time slot as a conflicting pair |
+
+### Confidence level
+
+**3 / 5 stars**
+
+The core behaviors — task completion, recurring scheduling, sort order, and conflict detection — are verified and passing. Confidence is kept at 3 stars because the tests do not yet cover edge cases such as: a pet with no tasks, tasks whose time slots touch but do not overlap (boundary conditions), non-recurring tasks that should not spawn a successor, or the Streamlit UI layer (`app.py`). Expanding coverage to those cases would raise confidence to 4–5 stars.
+
+---
+
 ## Getting started
 
 ### Setup
